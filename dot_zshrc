@@ -1,0 +1,151 @@
+# ========================================
+echo ">>> Loading .zshrc"
+# ========================================
+# [Homebrew]
+# Homebrew パス設定
+if [[ "$(uname)" == "Darwin" ]]; then
+    # macOS の場合
+    export PATH="/opt/homebrew/bin:$PATH"
+    echo ">>> Loaded the Homebrew configuration file for macOS"
+elif [[ "$(uname)" == "Linux" ]]; then
+    # Linux の場合
+    export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+    echo ">>> Loaded the Homebrew configuration file for Linux"
+fi
+# ========================================
+# [sheldon]
+# Sheldon の設定を読み込む
+eval "$(sheldon source)"
+
+# Powerlevel10kの設定ファイル読み込み
+# ~/.p10k.zshのカスタムテーマを使用する場合は"MesloLGS NF"をインストール
+source ~/.p10k.zsh
+
+# ========================================
+# [Neovim]
+# Neovimエイリアス設定
+alias vi='nvim'
+
+# ========================================
+# [zsh_history]
+# .zsh_historyの設定
+# HISTFILEが未設定の場合、デフォルトの履歴ファイルを設定
+if [ -z "$HISTFILE" ]; then
+    HISTFILE=$HOME/.zsh_history
+fi
+
+# メモリ上に保存される件数（検索できる件数）
+HISTSIZE=10000
+# ファイルに保存される履歴の件数
+SAVEHIST=10000
+
+# rootユーザーの場合は履歴を残さない
+if [ $UID = 0 ]; then
+    unset HISTFILE
+    SAVEHIST=0
+fi
+
+# 履歴関連のオプション設定
+setopt append_history          # 履歴ファイルを上書きせず追加
+setopt extended_history        # zshの開始・終了時刻を記録
+setopt hist_expire_dups_first  # 重複した履歴から削除
+setopt hist_ignore_all_dups    # 重複するコマンドは古い方を削除
+setopt hist_ignore_dups        # 古い履歴と同じコマンドは無視
+setopt hist_ignore_space       # スペースで始まるコマンドは履歴に残さない
+setopt hist_save_no_dups       # 重複する履歴をファイルに保存しない
+setopt hist_verify             # 履歴呼び出し時に一旦編集可能にする
+setopt hist_reduce_blanks      # 余分な空白を詰めて記録
+setopt inc_append_history      # コマンド実行時に履歴を即時保存
+setopt share_history           # 履歴を複数の端末間で共有
+
+# ========================================
+# [fzf]
+# fzf を Zsh に読み込む
+source <(fzf --zsh)
+
+# 履歴からfzfを使ってコマンドを選択する関数
+function fzf-history-selection() {
+    # コマンド履歴を逆順に取得し、重複を排除
+    BUFFER=`history -n 1 | tac | awk '!a[$0]++' | fzf-tmux -p --reverse --height 40%`
+    # 選択したコマンドをバッファにセット
+    CURSOR=$#BUFFER
+    # プロンプトをリセットして更新
+    zle reset-prompt
+}
+
+# zle (Zsh Line Editor) にfzf-history-selection関数を登録
+zle -N fzf-history-selection
+
+# 未入力状態でTabを押したときにfzfを起動する関数
+function fzf-tab-selection() {
+    # バッファが完全に空の場合にfzfを起動
+    if [[ -z "$BUFFER" ]]; then
+        # 履歴から選択
+        fzf-history-selection
+    else
+        # デフォルトのTab補完を呼び出す
+        zle expand-or-complete
+    fi
+}
+
+# zle にfzf-tab-selection関数を登録
+zle -N fzf-tab-selection
+
+# Tabキーをfzf-tab-selection関数にバインド
+bindkey '^I' fzf-tab-selection
+
+# ========================================
+# [nvm]
+# nvmのパス設定
+# Homebrewでインストールされたnvmのパスを設定
+export NVM_DIR="${NVM_DIR:-$(brew --prefix nvm)}"
+
+# nvmスクリプトが存在する場合に読み込む
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# ========================================
+# [pyenv]
+# pyenvのパス設定
+# Homebrewでインストールされたpyenvのパスを設定
+export PYENV_DIR="${PYENV_DIR:-$(brew --prefix pyenv)}"
+
+# PYENV_DIRディレクトリが存在する場合、PATHにpyenvのパスを追加
+[ -d "$PYENV_DIR" ] && export PATH="$PYENV_DIR/bin:$PATH"
+
+# pyenvコマンドが使用可能な場合、pyenvの初期化を実行
+[ -x "$(command -v pyenv)" ] && eval "$(pyenv init -)"
+
+# ========================================
+# [zsh起動速度改善]
+# 補完機能を遅延初期化する関数
+function delayed_compinit {
+    # compinitを読み込む
+    autoload -Uz compinit
+    # 補完機能を初期化
+    compinit
+}
+
+# コマンド送信前に補完機能を初期化
+function init_comp {
+    # インタラクティブモードでない場合は終了
+    if [[ $ZSH_EVAL_CONTEXT != *:interactive:* ]]; then
+        return
+    fi
+
+    # 補完機能の初期化をバックグラウンドで実行
+    {
+        # 1秒待機 コマンド処理とのリソース競合を回避
+        sleep 1
+        # 補完機能を初期化
+        delayed_compinit
+    # 出力を無視
+    } > /dev/null 2>&1 &
+
+    # 一度だけ実行する
+    unset -f init_comp
+}
+
+# コマンド実行時にinit_compを実行
+preexec_functions+=init_comp
+
+# ========================================

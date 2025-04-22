@@ -1,0 +1,19 @@
+# ---------- Homebrew ----------
+brew "zsh"                      # シェル
+brew "chezmoi"                  # Dotfile 管理ツール
+brew "coreutils"                # GNU コマンドラインユーティリティ
+# brew "fzf"                      # コマンドラインファジーファインダー  ※arm64では動作しない
+                                  # ソースからインストールすることで対応 brew install --build-from-source fzf
+brew "neovim"                   # モダンなVimベースのテキストエディタ
+brew "nvm"                      # Node.js バージョン管理ツール
+brew "pyenv"                    # Python バージョン管理ツール
+brew "sheldon"                  # Zshプラグイン管理ツール
+brew "tmux"                     # ターミナルマルチプレクサ
+brew "tree"                     # ディレクトリ構造をツリー表示
+brew "ripgrep"                  # ファイル検索ツール (telescope-fzf-native.nvimで使用)
+brew "fd"                       # 高速なファイル検索ツール (Telescopeや他のツールで使用)
+brew "stylua"                   # Lua ファイルのコードフォーマッター コードの自動整形に使用。
+brew "unzip"                    # zipの解凍に使用
+brew "rust"                     # Rustプログラミング言語
+# ---------- フォント ----------
+cask "font-meslo-lg-nerd-font"  # p10kテーマ用のフォントをインストール

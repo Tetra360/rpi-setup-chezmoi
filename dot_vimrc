@@ -1,0 +1,90 @@
+" ========== encoding ==========
+
+" 文字エンコーディングをUTF-8に設定
+set encoding=utf-8
+" スクリプトのエンコーディングをUTF-8に設定
+scriptencoding utf-8
+
+" ========== display ==========
+
+" 行番号を表示
+set number
+
+" :split コマンドを実行時、新しいウィンドウが下に表示
+set splitbelow
+
+" ========== search ==========
+
+" 検索結果をハイライト
+set hlsearch
+" 検索時に大文字小文字を無視
+set ignorecase
+" 大文字が含まれている場合は区別
+set smartcase
+
+" ========== editing ==========
+
+" カーソルホールドの待機時間を250msに短縮
+set updatetime=250
+
+" タブ関連の設定
+" タブをスペースに変換
+set expandtab
+" 自動インデント時のスペース数を4に設定
+set shiftwidth=4
+" タブ文字の表示幅を4に設定
+set tabstop=4
+" タブキー入力時のスペース数を4に設定
+set softtabstop=4
+" 新しい行で前の行のインデントを継続
+set autoindent
+" 自動的に適切なインデントを追加
+set smartindent
+" 文字入力するたびに検索結果を更新
+set incsearch
+
+" ========== command mode ==========
+
+" コマンド補完メニューを表示
+set wildmenu
+
+" ========== Plugin Management ==========
+
+" vim-plugがインストールされていない場合にインストールする
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent execute '!curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  " インストール後、再読み込みしてプラグインを使えるようにする
+  autocmd VimEnter * PlugInstall | source $MYVIMRC
+endif
+
+" vim-plug でプラグインを管理
+call plug#begin('~/.vim/plugged')
+
+" Draculaカラースキームをインストール
+" Draculaテーマで視認性の高いカラースキームを設定するため
+Plug 'dracula/vim', { 'as': 'dracula' }
+
+" Auto-pairsプラグインをインストール
+" カッコやクォートを入力すると自動で閉じるペアを追加するため
+Plug 'jiangmiao/auto-pairs'
+
+" Rainbowプラグインをインストール
+" ネストされた括弧に色をつけ、コードの見やすさを向上させるため
+Plug 'luochen1990/rainbow'
+
+" プラグインインストールを終了
+call plug#end()
+
+" ========== Plugin Settings ==========
+
+" Draculaカラースキームを有効にする
+syntax on
+colorscheme dracula
+
+" Rainbowプラグインを有効化する
+let g:rainbow_active = 1
+
+" ========== custom options ==========
+
+" 背景を透明にする
+" highlight Normal ctermbg=none

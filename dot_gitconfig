@@ -1,0 +1,35 @@
+[user]
+	# Git コミットに使用するユーザー名とメールアドレスを設定
+	name = Tetra360
+	email = m.168suzuki@gmail.com
+
+[pull]
+	# pull 時に fast-forward のみ許可（非 fast-forward の場合はエラー）
+	ff = only
+	# pull 時にリベースを使用しない（マージを使用する）
+	rebase = false
+
+[core]
+	# 改行コードを LF に設定（Windows の CRLF ではなく UNIX 系の LF）
+	eol = lf
+	# ファイル名の大文字・小文字の違いを区別する
+	ignorecase = false
+	# 日本語などの非 ASCII 文字を含むファイル名をエスケープせず表示
+	quotepath = false
+
+[init]
+	# 新しいリポジトリを作成する際のデフォルトブランチ名を "main" に設定
+	defaultBranch = main
+
+[fetch]
+	# fetch 時にリモートで削除されたブランチをローカルでも自動削除
+	prune = true
+
+[rebase]
+	# 自動的に squash を有効にし、不要なコミットをまとめる
+	autosquash = true
+
+[credential]
+	# Git の認証情報を管理するためのヘルパープログラムを指定（Windows 環境の場合）
+	[credential]
+    helper = "/mnt/c/Program Files/Git/mingw64/bin/git-credential-manager.exe"

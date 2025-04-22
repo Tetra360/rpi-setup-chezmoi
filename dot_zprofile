@@ -1,0 +1,13 @@
+# ~/.zprofile: ログインシェルの設定ファイル
+
+# bashの場合は.bashrcを読み込む
+if [ -n "$BASH_VERSION" ] && [ -f "$HOME/.bashrc" ]; then
+    . "$HOME/.bashrc"
+fi
+
+# プライベートbinディレクトリをPATHに追加
+for dir in "$HOME/bin" "$HOME/.local/bin"; do
+    [ -d "$dir" ] && PATH="$dir:$PATH"
+done
+
+export PATH  # 更新したPATHをエクスポート
